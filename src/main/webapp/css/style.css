@@ -1,0 +1,78 @@
+/* 기본 스타일 - 흑백톤 미니멀 디자인 */
+
+body {
+    font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+    line-height: 1.6;
+    color: #000000;
+    background-color: #ffffff;
+}
+
+header {
+    background-color: #ffffff;
+    color: #000000;
+    padding: 2rem 0;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+header h1 {
+    text-align: left;
+    margin-bottom: 1.5rem;
+    font-weight: 300;
+    font-size: 1.5rem;
+    letter-spacing: -0.5px;
+    padding: 0 2rem;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: flex-start;
+    gap: 3rem;
+    padding: 0 2rem;
+}
+
+nav a {
+    color: #000000;
+    text-decoration: none;
+    padding: 0.5rem 0;
+    transition: opacity 0.2s;
+    font-weight: 400;
+    font-size: 0.95rem;
+    letter-spacing: 0.3px;
+    border-bottom: 1px solid transparent;
+}
+
+nav a:hover {
+    opacity: 0.6;
+    border-bottom-color: #000000;
+}
+
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0;
+    background-color: #ffffff;
+    min-height: calc(100vh - 200px);
+}
+
+footer {
+    text-align: center;
+    padding: 3rem 2rem;
+    background-color: #ffffff;
+    color: #000000;
+    margin-top: 4rem;
+    border-top: 1px solid #e5e5e5;
+    font-size: 0.875rem;
+    font-weight: 300;
+    letter-spacing: 0.3px;
+}
+
+/* footer 디자인 */
+footer p {
+    margin: 0.5rem 0;
+}
+
+footer p:first-child {
+    margin-bottom: 0.75rem;
+}
+
