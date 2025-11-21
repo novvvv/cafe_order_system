@@ -55,6 +55,10 @@ main {
     min-height: calc(100vh - 200px);
 }
 
+main .main-container {
+    padding-top: 6rem !important;
+}
+
 footer {
     text-align: center;
     padding: 3rem 2rem;
@@ -74,5 +78,91 @@ footer p {
 
 footer p:first-child {
     margin-bottom: 0.75rem;
+}
+
+/* 메인 페이지 이미지 갤러리 스타일 */
+.main-container {
+    padding: 6rem 2rem 4rem 2rem;
+}
+
+.image-gallery {
+    width: 100%;
+    margin-top: 2rem;
+}
+
+.image-gallery h2 {
+    font-size: 1.75rem;
+    font-weight: 300;
+    color: #000000;
+    margin-bottom: 3rem;
+    text-align: left;
+    letter-spacing: -0.5px;
+}
+
+.image-row {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2.5rem;
+    flex-wrap: nowrap !important;
+    width: 100%;
+}
+
+.image-card {
+    flex: 1;
+    max-width: 350px;
+    background-color: #ffffff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+    border-color: #000000;
+}
+
+.image-row .gallery-image {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    max-height: 350px;
+    object-fit: contain;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.image-card:hover .gallery-image {
+    transform: scale(1.02);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .image-row {
+        flex-direction: column;
+        gap: 1.5rem;
+        align-items: center;
+    }
+    
+    .image-card {
+        max-width: 100%;
+        width: 100%;
+    }
+    
+    .gallery-image {
+        max-width: 100%;
+        width: 100%;
+    }
+    
+    .main-container {
+        padding: 2rem 1rem;
+    }
 }
 

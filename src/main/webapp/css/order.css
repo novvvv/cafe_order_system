@@ -1,7 +1,7 @@
 /* 주문 입력 폼 스타일 - 흑백톤 미니멀 디자인 */
 
 .order-container {
-    max-width: 800px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 4rem 2rem;
     background-color: transparent;
@@ -16,6 +16,16 @@
     font-size: 1.75rem;
     font-weight: 300;
     letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.coffee-icon {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    vertical-align: middle;
 }
 
 .order-table {
@@ -146,6 +156,23 @@
     font-weight: 500;
 }
 
+.menu-select-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.menu-image {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.menu-select-wrapper select {
+    flex: 1;
+}
+
 .error-message {
     display: block;
     color: #666666;
@@ -154,6 +181,35 @@
     min-height: 1.25rem;
     font-weight: 300;
 }
+
+
+/* 총 금액 라벨 스타일 */
+
+.total-price-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 0;
+    margin-top: 2rem;
+    border-top: 2px solid #000000;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.total-label {
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: #000000;
+    letter-spacing: 0.5px;
+}
+
+.total-amount {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #000000;
+    letter-spacing: 0.5px;
+}
+
+
 
 .button-group {
     display: flex;
@@ -175,6 +231,20 @@
     min-width: 120px;
     letter-spacing: 0.5px;
     text-transform: uppercase;
+    display: inline-block;
+    text-decoration: none;
+    text-align: center;
+    background-color: #ffffff;
+    color: #000000;
+}
+
+a.btn {
+    color: #000000;
+}
+
+a.btn:hover {
+    background-color: #000000;
+    color: #ffffff;
 }
 
 .btn-submit {
@@ -199,7 +269,7 @@
     color: #ffffff;
 }
 
-/* 반응형 디자인 */
+/* 반응형 디자인  적용 모바일 사이즈*/
 @media (max-width: 768px) {
     .order-container {
         padding: 1rem;
@@ -227,5 +297,161 @@
     .btn {
         width: 100%;
     }
+    
+    .coffee-icon {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .menu-image {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .menu-select-wrapper {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .total-price-section {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .total-amount {
+        font-size: 1.3rem;
+    }
+}
+
+/* 주문 처리 결과 페이지 스타일 */
+.result-message {
+    margin-top: 2rem;
+    padding: 2rem;
+    border: 1px solid #e5e5e5;
+    background-color: #ffffff;
+}
+
+.result-message.success-message {
+    border-top: 3px solid #000000;
+}
+
+.result-message.error-message {
+    border-top: 3px solid #666666;
+    background-color: #f9f9f9;
+}
+
+.result-title {
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: #000000;
+    margin-bottom: 2rem;
+    letter-spacing: 0.3px;
+}
+
+.order-info-table {
+    margin-top: 1.5rem;
+}
+
+.order-info-table .order-table {
+    margin-bottom: 0;
+}
+
+.order-info-table .order-table th {
+    width: 120px;
+    font-weight: 400;
+    color: #666666;
+    font-size: 0.9rem;
+}
+
+.order-info-table .order-table td {
+    color: #000000;
+    font-size: 0.95rem;
+}
+
+.order-info-table .order-table tr:last-child th,
+.order-info-table .order-table tr:last-child td {
+    border-bottom: none;
+}
+
+.total-price-cell {
+    font-size: 1.2rem !important;
+    font-weight: 500 !important;
+    color: #000000 !important;
+}
+
+.result-message.error-message .result-title {
+    color: #666666;
+    text-align: center;
+    padding: 1rem 0;
+}
+
+/* 주문 목록 테이블 스타일  */
+.order-list-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 2rem;
+    background-color: transparent;
+}
+
+.order-list-table thead th {
+    background-color: transparent;
+    color: #000000;
+    padding: 1.5rem 2rem 1rem 0;
+    text-align: left;
+    font-weight: 400;
+    font-size: 0.95rem;
+    letter-spacing: 0.3px;
+    border-bottom: 1px solid #e5e5e5;
+    vertical-align: top;
+}
+
+.order-list-table thead th:first-child {
+    padding-left: 0;
+}
+
+.order-list-table thead th:last-child {
+    padding-right: 0;
+}
+
+.order-list-table tbody td {
+    padding: 1.5rem 2rem 1.5rem 0;
+    border-bottom: 1px solid #e5e5e5;
+    color: #000000;
+    font-size: 0.95rem;
+    vertical-align: middle;
+}
+
+.order-list-table tbody td:first-child {
+    padding-left: 0;
+}
+
+.order-list-table tbody td:last-child {
+    padding-right: 0;
+}
+
+.order-list-table tbody tr:hover td {
+    background-color: transparent;
+}
+
+.order-list-table tbody tr:last-child td {
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.order-list-table .total-price-cell {
+    font-weight: 500;
+    color: #000000;
+}
+
+.empty-message {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #666666;
+    font-size: 1rem;
+    margin-top: 2rem;
+}
+
+.empty-message p {
+    margin: 0;
 }
 

@@ -33,4 +33,3 @@ SHOW TABLES;
 
 -- 테이블 구조 확인
 DESC cafe_orders;
-

@@ -7,6 +7,76 @@ document.addEventListener('DOMContentLoaded', function() {
     const sizeRadios = document.querySelectorAll('input[name="size"]');
     const temperatureRadios = document.querySelectorAll('input[name="temperature"]');
     const quantityInput = document.getElementById('quantity');
+    const totalPriceElement = document.getElementById('totalPrice');
+
+    // * ==========================  가격 계산 로직 ==========================  * 
+    // * menuPrices : 메뉴별 기본 가격 변수 
+    // * sizePrices : 사이즈별 추가 금액 변수 
+
+
+    // * 메뉴별 기본 가격 변수 
+    const menuPrices = {
+        'americano': 4500,
+        'espresso': 4300,
+        'latte': 5000,
+        'cappuccino': 5000
+    };
+
+    // * 사이즈별 추가 금액 변수 
+    const sizePrices = {
+        'S': 0,
+        'M': 100,
+        'L': 200,
+        'G': 500,
+        'X': 1000
+    };
+
+    // * cacluateTotal() - 총 가격 계산 함수
+    function calculateTotal() {
+
+        // [Exception] totalPriceElement를 찾을 수 없는 경우 예외 처리
+        if (!totalPriceElement) {
+            console.error('totalPriceElement를 찾을 수 없습니다.');
+            return;
+        }
+        
+        // [Variable] 메뉴, 사이즈, 수량 변수 선언
+        // menu - <select> americano, espresso, latte, cappuccino 
+        // sizeRadio - HTMLInputElement or null
+        //     <input type="radio" name="size" value="M" checked>
+        // size - S, M, L, G, X or null 
+        // quantity - 수량 
+        const menu = menuSelect.value;
+        const sizeRadio = document.querySelector('input[name="size"]:checked');
+        const size = sizeRadio ? sizeRadio.value : null;
+        const quantity = parseInt(quantityInput.value) || 1;
+
+        // * Case 1 : 메뉴, 사이즈가 모두 선택된 경우 
+        if (menu && size) {
+
+            const basePrice = menuPrices[menu] || 0;
+            const sizePrice = sizePrices[size] || 0;
+            const total = (basePrice + sizePrice) * quantity;
+            totalPriceElement.textContent = total.toLocaleString() + '원';
+
+        } 
+        
+        // * Case 2 : 메뉴만 선택된 경우 
+        else if (menu) {
+
+            const basePrice = menuPrices[menu] || 0; 
+            const total = basePrice * quantity;
+            totalPriceElement.textContent = total.toLocaleString() + '원';
+
+        } 
+        
+        // * Case 3 : 아무것도 선택되지 않은 경우 
+        else {
+            totalPriceElement.textContent = '0원';
+        }
+    }
+
+    // * ==========================  가격 계산 로직 ==========================  * 
 
     // 에러 메시지 표시 함수
     function showError(elementId, message) {
@@ -149,8 +219,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    menuSelect.addEventListener('change', validateMenu);
+
+    // * menuSelect 이벤트 리스너 
     menuSelect.addEventListener('change', function() {
+        validateMenu();
+        calculateTotal(); 
         if (menuSelect.value !== '') {
             hideError('menuError');
             menuSelect.style.borderBottomColor = '#000000';
@@ -162,6 +235,7 @@ document.addEventListener('DOMContentLoaded', function() {
         radio.addEventListener('change', function() {
             if (Array.from(sizeRadios).some(r => r.checked)) {
                 hideError('sizeError');
+                calculateTotal(); // 가격 계산
             }
         });
     });
@@ -181,6 +255,7 @@ document.addEventListener('DOMContentLoaded', function() {
             hideError('quantityError');
             quantityInput.style.borderBottomColor = '#000000';
             quantityInput.style.borderBottomWidth = '1px';
+            calculateTotal(); // 가격 계산
         }
     });
 
@@ -224,8 +299,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 menuSelect.style.borderBottomWidth = '1px';
                 quantityInput.style.borderBottomColor = '#000000';
                 quantityInput.style.borderBottomWidth = '1px';
+                
+                // 총액 초기화
+                calculateTotal();
             }, 100);
         });
     }
+    
+    // 페이지 로드 시 초기 계산 실행
+    calculateTotal();
 });
 

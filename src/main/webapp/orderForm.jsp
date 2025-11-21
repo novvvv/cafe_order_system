@@ -18,7 +18,7 @@
 
             <h2>주문 입력 폼</h2>
             
-            <form id="orderForm" method="post" action="${pageContext.request.contextPath}/order/process">
+            <form id="orderForm" method="post" action="${pageContext.request.contextPath}/insertOrder.jsp">
                 <table class="order-table">
 
                     <!-- 1. 이름 입력 필드 -->
@@ -46,10 +46,10 @@
                         <td>
                             <select id="menu" name="menu" required>
                                 <option value="">메뉴를 선택하세요</option>
-                                <option value="americano">아메리카노</option>
-                                <option value="latte">라떼</option>
-                                <option value="cappuccino">카푸치노</option>
-                                <option value="espresso">에스프레소</option>
+                                <option value="americano">아메리카노 4500원</option>
+                                <option value="espresso">에스프레소 4300원</option>
+                                <option value="latte">카라멜 라떼 5000원</option>
+                                <option value="cappuccino">카푸치노 5000원</option>
                             </select>
                             <span class="error-message" id="menuError"></span>
                         </td>
@@ -62,10 +62,10 @@
                         <td>
                             <div class="radio-group">
                                 <label><input type="radio" name="size" value="S" required> S</label>
-                                <label><input type="radio" name="size" value="M" required> M</label>
-                                <label><input type="radio" name="size" value="L" required> L</label>
-                                <label><input type="radio" name="size" value="G" required> G</label>
-                                <label><input type="radio" name="size" value="X" required> X</label>
+                                <label><input type="radio" name="size" value="M" required> M (+100)</label>
+                                <label><input type="radio" name="size" value="L" required> L (+200)</label>
+                                <label><input type="radio" name="size" value="G" required> G (+500)</label>
+                                <label><input type="radio" name="size" value="X" required> X (+1000)</label>
                             </div>
                             <span class="error-message" id="sizeError"></span>
                         </td>
@@ -106,6 +106,12 @@
                     </tr>
                 </table>
                 
+                <!-- 8. 총 금액 표시 영역 -->
+                <div class="total-price-section">
+                    <div class="total-label">총 주문 금액</div>
+                    <div class="total-amount" id="totalPrice">0원</div>
+                </div>
+                
                 <div class="button-group">
                     <button type="submit" class="btn btn-submit">주문하기</button>
                     <button type="reset" class="btn btn-reset">초기화</button>
@@ -116,7 +122,8 @@
 
     <jsp:include page="/WEB-INF/views/common/footer.jsp" />
 
-    <script src="${pageContext.request.contextPath}/js/orderValidation.js"></script>
+    <script src="${pageContext.request.contextPath}/js/validate.js"></script>
+    
 </body>
 </html>
 
