@@ -53,6 +53,7 @@
                                 <th>수량</th>
                                 <th>총 금액</th>
                                 <th>주문 시간</th>
+                                <th>주문 상태</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -81,6 +82,14 @@
                                     <td>${order.quantity}개</td>
                                     <td class="total-price-cell"><fmt:formatNumber value="${order.totalPrice}" pattern="#,###"/>원</td>
                                     <td><fmt:formatDate value="${order.orderTime}" pattern="yyyy-MM-dd HH:mm"/></td>
+                                    <td>
+                                        <select name="newStatus" class="status-select" data-order-id="${order.orderId}" onchange="updateOrderStatus(this)">
+                                            <option value="WAITING" ${order.orderStatus == 'WAITING' ? 'selected' : ''}>대기중</option>
+                                            <option value="PENDING" ${order.orderStatus == 'PENDING' ? 'selected' : ''}>진행중</option>
+                                            <option value="COMPLETED" ${order.orderStatus == 'COMPLETED' ? 'selected' : ''}>완료</option>
+                                            <option value="CANCELED" ${order.orderStatus == 'CANCELED' ? 'selected' : ''}>취소</option>
+                                        </select>
+                                    </td>
                                 </tr>
                             </c:forEach>
                         </tbody>
@@ -97,6 +106,59 @@
     </main>
     
     <jsp:include page="/WEB-INF/views/common/footer.jsp" />
+    
+    <script>
+        function updateOrderStatus(selectElement) {
+
+            var orderId = selectElement.getAttribute('data-order-id');
+            var newStatus = selectElement.value;
+            
+            // * AJAX 요청 전송 * 
+            // XMLHttpRequest 객체 생성
+            // XMLHttpRequest - 브라우저에서 서버와 통신하는 객체로, xhr변수에 요청 정보를 담는다.
+            // 페이지 새로고침 없이 서버와 데이터를 주고받기 위해 AJAX 요청을 사용한다.
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '${pageContext.request.contextPath}/updateOrderStatus.jsp', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            
+            // 요청 완료 시 처리
+            xhr.onreadystatechange = function() {
+
+                // * 요청 완료 시 처리 * 
+                // readyState : 요청의 현재 상태를 나타내는 숫자 (4 : 요청 완료)
+                if (xhr.readyState === 4) {
+
+                    // 200 : 요청 성공 (HTTP 상태 코드)
+                    if (xhr.status === 200) {
+                        try {
+                            
+                            var response = JSON.parse(xhr.responseText);
+                            
+                            if (response.success) {
+                                console.log(response.message);
+                            } 
+                            
+                            else {
+                                alert(response.message || '주문 상태 변경에 실패했습니다.');
+                            }
+
+                        } catch (e) {
+                            // JSON 파싱 실패 
+                            console.log("파싱 실패");
+                        }
+                    } 
+                    else {
+                        alert('서버 오류가 발생했습니다.');
+                    }
+                }
+
+
+            };
+            
+            // OrderId, newStatus 값을 URL 인코딩하여 전송한다. 
+            xhr.send('orderId=' + encodeURIComponent(orderId) + '&newStatus=' + encodeURIComponent(newStatus));
+        }
+    </script>
 </body>
 </html>
 

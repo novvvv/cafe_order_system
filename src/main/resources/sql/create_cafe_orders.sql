@@ -24,8 +24,10 @@ CREATE TABLE cafe_orders (
     total_price INT NOT NULL COMMENT '총 가격',
     request_message VARCHAR(500) COMMENT '요청사항',
     order_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '주문 시간',
+    order_status ENUM('WAITING', 'PENDING', 'COMPLETED', 'CANCELED') NOT NULL DEFAULT 'WAITING' COMMENT '주문 상태',
     INDEX idx_customer_phone (customer_phone),
-    INDEX idx_order_time (order_time)
+    INDEX idx_order_time (order_time),
+    INDEX idx_order_status (order_status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='카페 주문 테이블';
 
 -- 테이블 생성 확인

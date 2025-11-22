@@ -7,7 +7,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class OrderDAO {
 
@@ -21,8 +24,8 @@ public class OrderDAO {
         // INSERT QUERY
         String sql = "INSERT INTO cafe_orders " +
                 "(customer_name, customer_phone, menu_name, size_code, temperature, " +
-                "quantity, unit_price, total_price, request_message) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "quantity, unit_price, total_price, request_message, order_status) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try {
 
@@ -42,6 +45,7 @@ public class OrderDAO {
             pstmt.setInt(7, order.getUnitPrice());
             pstmt.setInt(8, order.getTotalPrice());
             pstmt.setString(9, order.getRequestMessage() != null ? order.getRequestMessage() : "");
+            pstmt.setString(10, order.getOrderStatus() != null ? order.getOrderStatus() : "WAITING");
 
             // SQL 실행
             int result = pstmt.executeUpdate();
@@ -73,7 +77,7 @@ public class OrderDAO {
         // SELECT QUERY - 최신 주문부터 표시
         String sql = "SELECT order_id, customer_name, customer_phone, menu_name, " +
                 "size_code, temperature, quantity, unit_price, total_price, " +
-                "request_message, order_time " +
+                "request_message, order_time, order_status " +
                 "FROM cafe_orders " +
                 "ORDER BY order_time DESC";
 
@@ -97,6 +101,7 @@ public class OrderDAO {
                 order.setTotalPrice(rs.getInt("total_price"));
                 order.setRequestMessage(rs.getString("request_message"));
                 order.setOrderTime(rs.getTimestamp("order_time"));
+                order.setOrderStatus(rs.getString("order_status"));
 
                 orderList.add(order);
             }
@@ -108,6 +113,148 @@ public class OrderDAO {
         }
 
         return orderList;
+    }
+
+    // * getCompletedOrdersByDate() - 완료된 주문 일별 통계 조회
+    // * COMPLETED 상태인 주문을 일별로 그룹화하여 주문 건수와 총 매출을 반환한다.
+    public Map<String, Map<String, Object>> getCompletedOrdersByDate() {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        Map<String, Map<String, Object>> dateStats = new LinkedHashMap<>();
+
+        String sql = "SELECT DATE(order_time) as order_date, " +
+                "COUNT(*) as order_count, " +
+                "SUM(total_price) as total_revenue " +
+                "FROM cafe_orders " +
+                "WHERE order_status = 'COMPLETED' " +
+                "GROUP BY DATE(order_time) " +
+                "ORDER BY order_date DESC";
+
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                String date = rs.getString("order_date");
+                Map<String, Object> stats = new HashMap<>();
+                stats.put("orderCount", rs.getInt("order_count"));
+                stats.put("totalRevenue", rs.getLong("total_revenue"));
+                dateStats.put(date, stats);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(rs, pstmt, conn);
+        }
+
+        return dateStats;
+    }
+
+    // * getCompletedOrdersByWeek() - 완료된 주문 주간 통계 조회
+    // * COMPLETED 상태인 주문을 주간으로 그룹화하여 주문 건수와 총 매출을 반환한다.
+    public Map<String, Map<String, Object>> getCompletedOrdersByWeek() {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        Map<String, Map<String, Object>> weekStats = new LinkedHashMap<>();
+
+        String sql = "SELECT CONCAT(YEAR(order_time), '-W', LPAD(WEEK(order_time, 1), 2, '0')) as order_week, " +
+                "COUNT(*) as order_count, " +
+                "SUM(total_price) as total_revenue " +
+                "FROM cafe_orders " +
+                "WHERE order_status = 'COMPLETED' " +
+                "GROUP BY YEAR(order_time), WEEK(order_time, 1) " +
+                "ORDER BY YEAR(order_time) DESC, WEEK(order_time, 1) DESC";
+
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                String week = rs.getString("order_week");
+                Map<String, Object> stats = new HashMap<>();
+                stats.put("orderCount", rs.getInt("order_count"));
+                stats.put("totalRevenue", rs.getLong("total_revenue"));
+                weekStats.put(week, stats);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(rs, pstmt, conn);
+        }
+
+        return weekStats;
+    }
+
+    // * getCompletedOrdersByMonth() - 완료된 주문 월별 통계 조회
+    // * COMPLETED 상태인 주문을 월별로 그룹화하여 주문 건수와 총 매출을 반환한다.
+    public Map<String, Map<String, Object>> getCompletedOrdersByMonth() {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        Map<String, Map<String, Object>> monthStats = new LinkedHashMap<>();
+
+        String sql = "SELECT DATE_FORMAT(order_time, '%Y-%m') as order_month, " +
+                "COUNT(*) as order_count, " +
+                "SUM(total_price) as total_revenue " +
+                "FROM cafe_orders " +
+                "WHERE order_status = 'COMPLETED' " +
+                "GROUP BY DATE_FORMAT(order_time, '%Y-%m') " +
+                "ORDER BY order_month DESC";
+
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                String month = rs.getString("order_month");
+                Map<String, Object> stats = new HashMap<>();
+                stats.put("orderCount", rs.getInt("order_count"));
+                stats.put("totalRevenue", rs.getLong("total_revenue"));
+                monthStats.put(month, stats);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(rs, pstmt, conn);
+        }
+
+        return monthStats;
+    }
+
+    // * updateOrderStatus() - 주문 상태 업데이트 함수
+    // * 주문 ID와 새로운 상태를 받아서 주문 상태를 업데이트한다.
+    public boolean updateOrderStatus(int orderId, String status) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        String sql = "UPDATE cafe_orders SET order_status = ? WHERE order_id = ?";
+
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, status);
+            pstmt.setInt(2, orderId);
+            int result = pstmt.executeUpdate();
+            return result > 0;
+
+        }
+
+        catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        finally {
+            closeResources(pstmt, conn);
+        }
     }
 
     // * closeResources() - 리소스 해제 함수 (ResultSet 포함)

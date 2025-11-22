@@ -19,6 +19,7 @@ public class Order {
     private int totalPrice; // 총 가격
     private String requestMessage; // 요청사항
     private Timestamp orderTime; // 주문 일시
+    private String orderStatus; // 주문 상태 (WAITING, PENDING, COMPLETED, CANCELED)
 
     // 기본 생성자
     public Order() {
@@ -37,6 +38,7 @@ public class Order {
         this.unitPrice = unitPrice;
         this.totalPrice = totalPrice;
         this.requestMessage = requestMessage;
+        this.orderStatus = "WAITING"; // 기본값 설정
     }
 
     // Getter and Setter
@@ -126,6 +128,14 @@ public class Order {
 
     public void setOrderTime(Timestamp orderTime) {
         this.orderTime = orderTime;
+    }
+
+    public String getOrderStatus() {
+        return orderStatus;
+    }
+
+    public void setOrderStatus(String orderStatus) {
+        this.orderStatus = orderStatus;
     }
 
 }
