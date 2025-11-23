@@ -596,6 +596,7 @@
             
             // 탭 전환 함수
             function showChart(type) {
+
                 // 모든 탭과 차트 숨기기
                 document.querySelectorAll('.chart-tab').forEach(tab => {
                     tab.classList.remove('active');
@@ -609,10 +610,14 @@
                 if (type === 'daily') {
                     document.querySelector('.chart-tab:nth-child(1)').classList.add('active');
                     targetChart = document.getElementById('daily-chart');
-                } else if (type === 'weekly') {
+                } 
+                
+                else if (type === 'weekly') {
                     document.querySelector('.chart-tab:nth-child(2)').classList.add('active');
                     targetChart = document.getElementById('weekly-chart');
-                } else {
+                } 
+                
+                else {
                     document.querySelector('.chart-tab:nth-child(3)').classList.add('active');
                     targetChart = document.getElementById('monthly-chart');
                 }

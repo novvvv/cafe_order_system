@@ -14,8 +14,8 @@ import java.util.Map;
 
 public class OrderDAO {
 
-    // * insertOrder() - 주문 데이터 삽입 함수
-    // * 데이터베이스에 주문 데이터 (Order)를 삽입한다.
+    // Logic insertOrder() - 주문 데이터 삽입 함수
+    // -- 데이터베이스에 주문 데이터 (Order)를 삽입한다.
     public boolean insertOrder(Order order) {
 
         Connection conn = null; // JDBC Connection 객체
@@ -255,6 +255,81 @@ public class OrderDAO {
         finally {
             closeResources(pstmt, conn);
         }
+    }
+
+    // Method getPendingOrdersByMenu() - Waiting/Pending 상태 주문을 메뉴별로 조회
+    // -- 메뉴별로 그룹화하여 각 메뉴의 총 수량(quantity 합계)을 반환한다. --
+    public Map<String, Integer> getPendingOrdersByMenu() {
+
+        // -- Init --
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        Map<String, Integer> menuCounts = new HashMap<>();
+
+        // -- SQL Query --
+        // -- order_stauts가 WAITING 혹은 PENDING 상태인 주문을 그룹화하여, 수량을 반환 --
+        String sql = "SELECT menu_name, SUM(quantity) as total_quantity " +
+                "FROM cafe_orders " +
+                "WHERE order_status IN ('WAITING', 'PENDING') " +
+                "GROUP BY menu_name";
+
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                String menuName = rs.getString("menu_name");
+                int totalQuantity = rs.getInt("total_quantity");
+                menuCounts.put(menuName, totalQuantity);
+            }
+
+        }
+
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        finally {
+            closeResources(rs, pstmt, conn);
+        }
+
+        return menuCounts;
+    }
+
+    // Method getPendingOrderCount() - Waiting/Pending 상태 주문 총 건수 조회
+    // -- 제조중인 주문의 총 건수를 반환한다. --
+    public int getPendingOrderCount() {
+
+        // -- Init --
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        int count = 0;
+
+        // -- SQL Query --
+        // -- order_stauts가 WAITING 혹은 PENDING 상태인 주문의 총 건수를 반환 --
+        String sql = "SELECT COUNT(*) as total_count " +
+                "FROM cafe_orders " +
+                "WHERE order_status IN ('WAITING', 'PENDING')";
+
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                count = rs.getInt("total_count");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(rs, pstmt, conn);
+        }
+
+        return count;
     }
 
     // * closeResources() - 리소스 해제 함수 (ResultSet 포함)
