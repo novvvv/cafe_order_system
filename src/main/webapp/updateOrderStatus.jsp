@@ -3,39 +3,47 @@
 <%
     response.setContentType("application/json; charset=UTF-8");
     
-    // 파라미터 수신 (OrderId, newStatus) (주문 아이디, 상태)
+    // -- 파라미터 수신 (OrderId, newStatus) (주문 아이디, 상태) --
     String orderIdStr = request.getParameter("orderId");
     String newStatus = request.getParameter("newStatus");
     
+    // -- Variable Init --
+    // -- success : 주문 상태 업데이트 성공 여부 
+    // -- message : 주문 상태 업데이트 메시지 
     boolean success = false;
     String message = "";
     
-    // [Exception] 파라미터 유효성 검증
+    // -- [Exception] Validation Check --
     if (orderIdStr == null || newStatus == null || orderIdStr.trim().isEmpty() || newStatus.trim().isEmpty()) {
         message = "파라미터가 올바르지 않습니다.";
     }
 
-    // [Exception] 상태 값 유효성 검증
+    // -- [Exception] Status Value Validation Check --
     else if (!newStatus.equals("WAITING") && !newStatus.equals("PENDING") && 
              !newStatus.equals("COMPLETED") && !newStatus.equals("CANCELED")) {
         message = "유효하지 않은 상태 값입니다.";
     }
 
-    // [Success] 주문 상태 업데이트
+    // -- [Success] Order Status Update --
     else {
+
         try {
+
             int orderId = Integer.parseInt(orderIdStr);
-            
-            // OrderDAO를 사용해서 주문 상태 업데이트 
             OrderDAO orderDAO = new OrderDAO();
             success = orderDAO.updateOrderStatus(orderId, newStatus);
             
-            if (success) {
+            if (success) 
+            {
                 message = "주문 상태가 변경되었습니다.";
-            } else {
+            } 
+            
+            else {
                 message = "주문 상태 변경에 실패했습니다.";
             }
+
         } 
+        
         // [Exception] 주문 ID가 숫자가 아닌 경우
         catch (NumberFormatException e) {
             message = "주문 ID가 올바르지 않습니다.";

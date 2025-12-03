@@ -8,7 +8,7 @@ COLLATE utf8mb4_unicode_ci;
 -- 데이터베이스 사용
 USE cafe_db;
 
--- 기존 테이블이 있으면 삭제 (주의: 기존 데이터가 모두 삭제됩니다)
+-- 기존 테이블이 있으면 삭제
 DROP TABLE IF EXISTS cafe_orders;
 
 -- 주문 테이블 생성

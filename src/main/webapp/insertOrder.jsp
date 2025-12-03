@@ -1,6 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.cafe.dto.Order" %>
 <%@ page import="com.cafe.dao.OrderDAO" %>
+<%@ page import="com.cafe.dao.InventoryDAO" %>
+<%@ page import="com.cafe.dto.Inventory" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.HashMap" %>
 <%@ page isErrorPage="false" %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -104,26 +108,65 @@
                     unitPrice = basePrice + sizePrice;
                     totalPrice = unitPrice * quantity;
                     
-                    // Order 객체 생성 및 DB 저장
-                    Order order = new Order();
-                    order.setCustomerName(name);
-                    order.setCustomerPhone(contact);
-                    order.setMenuName(menu);
-                    order.setSizeCode(size);
-                    order.setTemperature(temperature);
-                    order.setQuantity(quantity);
-                    order.setUnitPrice(unitPrice);
-                    order.setTotalPrice(totalPrice);
-                    order.setRequestMessage(requests != null ? requests : "");
+                    // -- 메뉴명 매핑 -- 
+                    Map<String, String> menuNameMap = new HashMap<String, String>();
+                    menuNameMap.put("americano", "아메리카노");
+                    menuNameMap.put("espresso", "에스프레소");
+                    menuNameMap.put("latte", "카페라떼");
+                    menuNameMap.put("cappuccino", "카푸치노");
                     
-                    // OrderDAO를 사용해서 DB에 저장
-                    OrderDAO orderDAO = new OrderDAO();
-                    success = orderDAO.insertOrder(order);
+                    // -- Null Check -- 
+                    String menuNameKorean = menuNameMap.get(menu);
+                    if (menuNameKorean == null) {
+                        menuNameKorean = menu; 
+                    }
                     
-                    if (success) {
-                        message = "주문이 성공적으로 등록되었습니다.";
-                    } else {
-                        message = "주문 등록에 실패했습니다.";
+                    // -- 재고 확인 -- 
+                    InventoryDAO inventoryDAO = new InventoryDAO();
+                    Inventory inventory = inventoryDAO.getInventoryByMenuName(menuNameKorean);
+                    
+                    if (inventory == null) {
+                        isValid = false;
+                        message = "존재하지 않는 메뉴입니다.";
+                    } 
+                    
+                    else if (inventory.getStockQuantity() < quantity) {
+                        isValid = false;
+                        message = "재고가 부족합니다. (현재 재고: " + inventory.getStockQuantity() + "개, 주문 수량: " + quantity + "개)";
+                    } 
+                    
+                    else {
+                        // Order 객체 생성 및 DB 저장
+                        Order order = new Order();
+                        order.setCustomerName(name);
+                        order.setCustomerPhone(contact);
+                        order.setMenuName(menu);
+                        order.setSizeCode(size);
+                        order.setTemperature(temperature);
+                        order.setQuantity(quantity);
+                        order.setUnitPrice(unitPrice);
+                        order.setTotalPrice(totalPrice);
+                        order.setRequestMessage(requests != null ? requests : "");
+                        
+                        // OrderDAO를 사용해서 DB에 저장
+                        OrderDAO orderDAO = new OrderDAO();
+                        success = orderDAO.insertOrder(order);
+                        
+                        // 주문 성공 시 재고 차감
+                        if (success) {
+                            boolean stockDecreased = inventoryDAO.decreaseStock(menuNameKorean, quantity);
+                            if (stockDecreased) {
+                                message = "주문이 성공적으로 등록되었습니다.";
+                            } 
+                            
+                            else {
+                                message = "주문은 등록되었지만 재고 차감에 실패했습니다. 관리자에게 문의하세요.";
+                            }
+                        } 
+                        
+                        else {
+                            message = "주문 등록에 실패했습니다.";
+                        }
                     }
                 } else {
                     message = errorMessage;
